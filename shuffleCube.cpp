@@ -25,18 +25,16 @@ class Cube
         }
         void showCube()
         {
-            cout<<"\t\t";
-            showFace(4);
+            showFace(4,"\t ");
             for(int i=0;i<length;i++)
             {
-                for(int j=0;j<length*length;j++)
+                for(int j=0;j<length*(faces-2);j++)
                 {
-                    cout<<cube[j/length][i][j%length]<<" ";
+                    cout<<cube[j/length][i][j%length]<<"  ";
                 }
                 cout<<endl;
             }
-            cout<<"\t\t";
-            showFace(5);
+            showFace(5,"\t ");
         }
 
         void mov1()
@@ -44,13 +42,14 @@ class Cube
 
         }
     private:
-        void showFace(int id)
+        void showFace(int id,string stline)
         {
             for(int i=0;i<length;i++)
             {
+                cout<<stline;
                 for(int j=0;j<length;j++)
                 {
-                    cout<<cube[id][i][j]<<" ";
+                    cout<<cube[id][i][j]<<"  ";
                 }
                 cout<<endl;
             }
@@ -61,5 +60,8 @@ class Cube
 
 int main()
 {
+    Cube game;
+    game.reset();
+    game.showCube();
     return 0;
 }
