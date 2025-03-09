@@ -1,15 +1,48 @@
 #include<iostream>
 #include<vector>
-
+#include<queue>
 using namespace std;
 
 class Cube
 {
     int faces=6;
     int length=3;
-    int cube[6][3][3];   
-    char faceNames[6]={'B','W','Y','O','R','G'};
+    vector<vector<vector<int>>> cube;
+    vector<int> aux; 
+    vector<char> faceNames;
+    queue<string> q;  
     public:
+        Cube()
+        {
+            cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
+            aux=vector<int> (3);
+            faceNames={'B','W','Y','O','R','G'};
+            reset();
+        }
+        void mov1(int dir)
+        {
+            int f,start;
+            if(dir>0)
+            {
+                start=0;
+                f=1;
+            }
+            else{
+                start=faces-3;
+                f=-1;
+            }
+            for(int j=0;j<length;j++)
+            {
+                aux=cube[start][length];
+            }
+            for(int i=0;i<faces-2;i++)
+            {
+                for(int j=0;j<length;j++)
+                {
+                    //cube[i]
+                }
+            }
+        }
         void reset()
         {
             for(int i=0;i<faces;i++)
@@ -37,10 +70,7 @@ class Cube
             showFace(5,"\t ");
         }
 
-        void mov1()
-        {
-
-        }
+        
     private:
         void showFace(int id,string stline)
         {
