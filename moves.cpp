@@ -20,36 +20,82 @@ class Cube
             faceNames={'B','W','Y','O','R','G'};
             reset();
         }
-        void mov1(bool right)
+        void horizontal(bool right,int fila)
         {
             int aux;
             if(right)
             {
                 for(int i=0;i<length;i++)
                 {
-                    aux=cube[faces-3][0][i];
+                    aux=cube[faces-3][fila][i];
                     for(int j=faces-3;j>0;j--)
                     {
-                        cube[j][0][i]=cube[j-1][0][i];
+                        cube[j][fila][i]=cube[j-1][fila][i];
                     }
-                    cube[0][0][i]=aux;
+                    cube[0][fila][i]=aux;
                 }
             }
             else
             {
                 for(int i=0;i<length;i++)
                 {
-                    aux=cube[0][0][i];
+                    aux=cube[0][fila][i];
                     for(int j=0;j<faces-3;j++)
                     {
-                        cube[j][0][i]=cube[j+1][0][i];
+                        cube[j][fila][i]=cube[j+1][fila][i];
                     }
-                    cube[faces-3][0][i]=aux;
+                    cube[faces-3][fila][i]=aux;
                 }
             }
-            //rotate(4,true);
+            if(fila==0)
+                rotateFace(4,right);
+            if(fila==length-1)
+                rotateFace(5,right);
         }
         
+        void vertical(bool up,int columna)
+        {
+            int aux;
+            if(up)
+            {
+                for(int i=0;i<length;i++)
+                {
+                    aux=cube[4][i][columna];
+                    cube[4][i][columna]=cube[1][i][columna];
+                    cube[1][i][columna]=cube[5][i][columna];
+                    cube[5][i][columna]=cube[3][i][length-1-columna];
+                    cube[3][i][length-1-columna]=aux;
+                }
+            }
+            else
+            {
+                for(int i=0;i<length;i++)
+                {
+                    aux=cube[5][i][columna];
+                    cube[5][i][columna]=cube[1][i][columna];
+                    cube[1][i][columna]=cube[4][i][columna];
+                    cube[4][i][columna]=cube[3][i][length-1-columna];
+                    cube[3][i][length-1-columna]=aux;
+                }
+            }
+            if(columna==0)
+            {
+                rotateFace(0,up);
+            }
+            if(columna==length-1){
+                rotateFace(2,up);
+            }
+        }
+
+        void rotar(bool right,int depth)
+        {
+            int aux;
+            if(right)
+            {
+                
+            }
+        }
+
         void reset()
         {
             for(int i=0;i<faces;i++)
@@ -76,7 +122,7 @@ class Cube
             }
             showFace(5,"\t ");
         }
-        void rotate(int face,bool right)
+        void rotateFace(int face,bool right)
         {
             int aux;
             pair<int,int> cor,newCor;
@@ -168,7 +214,25 @@ class Cube
 int main()
 {
     Cube game;
-    game.mov1(false);
     game.showCube();
+    while(true)
+    {
+        game.showCube();
+        int opt;
+        cin>>opt;
+        if(opt)
+        {
+            bool flag;
+            int fila;
+            cin>>fila>>flag;
+            game.horizontal(flag,fila);
+        }
+        else{
+            bool flag;
+            int columna;
+            cin>>columna>>flag;
+            game.vertical(flag,columna);
+        }
+    }
     return 0;
 }
