@@ -92,7 +92,24 @@ class Cube
             int aux;
             if(right)
             {
-                
+                for(int i=0;i<length;i++)
+                {
+                    aux=cube[4][depth][i];
+                    cube[4][depth][i]=cube[0][length-1-i][depth];
+                    cube[0][length-1-i][depth]=cube[5][length-1-depth][length-i];
+                    cube[5][length-1-depth][length-i]=cube[2][i][length-1-depth];
+                    cube[2][i][length-1-depth]=aux;
+                }
+            }
+            else{
+                for(int i=0;i<length;i++)
+                {
+                    aux=cube[4][depth][i];
+                    cube[4][depth][i]=cube[2][i][length-1-depth];
+                    cube[2][i][length-1-depth]=cube[5][depth][i];
+                    cube[5][depth][i]=cube[0][i][length-1-depth];
+                    cube[0][i][length-1-depth]=aux;
+                }
             }
         }
 
