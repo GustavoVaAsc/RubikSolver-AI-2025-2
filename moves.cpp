@@ -111,6 +111,14 @@ class Cube
                     cube[0][i][length-1-depth]=aux;
                 }
             }
+            if(depth==length-1)
+            {
+                rotateFace(right,1);
+            }
+            if(depth==0)
+            {
+                rotateFace(!right,3);
+            }
         }
 
         void reset()
@@ -231,10 +239,10 @@ class Cube
 int main()
 {
     Cube game;
-    game.showCube();
     while(true)
     {
         game.showCube();
+        cout<<"1 Para movimiento horizontal\n2 Para vertical\n3Para ";
         int opt;
         cin>>opt;
         if(opt)
