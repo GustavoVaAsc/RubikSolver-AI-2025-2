@@ -1,17 +1,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
 
 const int CUBE_SIZE = 3;
 
 // Colors for the cube
-SDL_Color red = {255, 0, 0, 255};       // Original color for Red face
-SDL_Color green = {0, 255, 0, 255};     // Original color for Green face
-SDL_Color blue = {0, 0, 255, 255};      // Original color for Blue face
-SDL_Color yellow = {255, 255, 0, 255};  // Original color for Yellow face
-SDL_Color white = {255, 255, 255, 255}; // Original color for White face
-SDL_Color orange = {255, 165, 0, 255};  // Original color for Orange face
+SDL_Color green = {0, 255, 0, 255};     // Green - 0
+SDL_Color white = {255, 255, 255, 255}; // White - 1
+SDL_Color blue = {0, 0, 255, 255};      // Blue - 2
+SDL_Color yellow = {255, 255, 0, 255};  // Yellow - 3
+SDL_Color orange = {255, 165, 0, 255};  // Orange - 4
+SDL_Color red = {255, 0, 0, 255};       // Red - 5
 
 // Function to draw a square with a specific color
 void drawSquare(SDL_Renderer* renderer, int x, int y, int size, SDL_Color color) {
@@ -44,6 +45,11 @@ bool isInside(int x, int y, int mouseX, int mouseY, int squareSize) {
     return mouseX >= x && mouseX <= x + squareSize && mouseY >= y && mouseY <= y + squareSize;
 }
 
+// Function to check if the mouse is hovering over the button
+bool isButtonHovered(int buttonX, int buttonY, int buttonSize, int mouseX, int mouseY) {
+    return mouseX >= buttonX && mouseX <= buttonX + buttonSize && mouseY >= buttonY && mouseY <= buttonY + buttonSize;
+}
+
 int main() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
@@ -67,13 +73,50 @@ int main() {
         return 1;
     }
 
+    // Load button images
+    SDL_Surface* buttonSurface = IMG_Load("RubikNotSolveButton.jpg");
+    if (buttonSurface == nullptr) {
+        std::cerr << "Error loading button image: " << IMG_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Surface* buttonHoverSurface = IMG_Load("RubikSolveButton.jpg");
+    if (buttonHoverSurface == nullptr) {
+        std::cerr << "Error loading hover button image: " << IMG_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    // Create textures from surfaces
+    SDL_Texture* buttonTexture = SDL_CreateTextureFromSurface(renderer, buttonSurface);
+    if (buttonTexture == nullptr) {
+        std::cerr << "Error creating texture for button: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(buttonSurface);
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Texture* buttonHoverTexture = SDL_CreateTextureFromSurface(renderer, buttonHoverSurface);
+    if (buttonHoverTexture == nullptr) {
+        std::cerr << "Error creating hover texture for button: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(buttonSurface);
+        SDL_FreeSurface(buttonHoverSurface);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Free surfaces after creating textures
+    SDL_FreeSurface(buttonSurface);
+    SDL_FreeSurface(buttonHoverSurface);
+
     // Initialize the colors for the cube
-    SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE] = { {white, white, white}, {white, white, white}, {white, white, white} };  // White
-    SDL_Color backFace[CUBE_SIZE][CUBE_SIZE] = { {yellow, yellow, yellow}, {yellow, yellow, yellow}, {yellow, yellow, yellow} };  // Yellow
-    SDL_Color leftFace[CUBE_SIZE][CUBE_SIZE] = { {green, green, green}, {green, green, green}, {green, green, green} };  // Green
-    SDL_Color rightFace[CUBE_SIZE][CUBE_SIZE] = { {blue, blue, blue}, {blue, blue, blue}, {blue, blue, blue} };  // Blue
-    SDL_Color topFace[CUBE_SIZE][CUBE_SIZE] = { {orange, orange, orange}, {orange, orange, orange}, {orange, orange, orange} };  // Orange
-    SDL_Color bottomFace[CUBE_SIZE][CUBE_SIZE] = { {red, red, red}, {red, red, red}, {red, red, red} };  // Red
+    SDL_Color leftFace[CUBE_SIZE][CUBE_SIZE] = { {green, green, green}, {green, green, green}, {green, green, green} };  // Green - 0
+    SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE] = { {white, white, white}, {white, white, white}, {white, white, white} };  // White- 1
+    SDL_Color rightFace[CUBE_SIZE][CUBE_SIZE] = { {blue, blue, blue}, {blue, blue, blue}, {blue, blue, blue} };  // Blue - 2
+    SDL_Color backFace[CUBE_SIZE][CUBE_SIZE] = { {yellow, yellow, yellow}, {yellow, yellow, yellow}, {yellow, yellow, yellow} };  // Yellow - 3
+    SDL_Color topFace[CUBE_SIZE][CUBE_SIZE] = { {orange, orange, orange}, {orange, orange, orange}, {orange, orange, orange} };  // Orange - 4
+    SDL_Color bottomFace[CUBE_SIZE][CUBE_SIZE] = { {red, red, red}, {red, red, red}, {red, red, red} };  // Red - 5
 
     // Define the list of colors to cycle through
     std::vector<SDL_Color> colorCycle = {red, green, blue, yellow, orange, white};
@@ -86,8 +129,12 @@ int main() {
     int squareSize = 40;
 
     // Calculate the center of the window (900x700) and center the cube
-    int startX = (900 / 2) - (squareSize * 3);
-    int startY = (700 / 2) - (squareSize * 2);
+    int startX = (900 / 2) - (squareSize * 3.5);
+    int startY = (700 / 2) - (squareSize * 4);
+
+    int buttonSize = 150;
+    int buttonX = (900 - buttonSize) / 2; // Center horizontally
+    int buttonY = 500; // Place the button at the bottom
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -99,11 +146,16 @@ int main() {
                 int mouseX = event.button.x;
                 int mouseY = event.button.y;
 
+                // If the mouse clicks on the button, perform some action here
+                if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
+                    std::cout << "Button clicked!" << std::endl;
+                }
+
                 // Check each square on the front face (White)
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -117,7 +169,7 @@ int main() {
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX + 300 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -131,7 +183,7 @@ int main() {
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX - 150 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -145,7 +197,7 @@ int main() {
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX + 150 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -159,7 +211,7 @@ int main() {
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX + col * squareSize, startY - 150 + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -173,7 +225,7 @@ int main() {
                 for (int row = 0; row < CUBE_SIZE; ++row) {
                     for (int col = 0; col < CUBE_SIZE; ++col) {
                         if (isInside(startX + col * squareSize, startY + 150 + row * squareSize, mouseX, mouseY, squareSize)) {
-                            //Center never changes
+                            // Center never changes
                             if (row != 1 || col != 1) {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
@@ -184,6 +236,10 @@ int main() {
                 }
             }
         }
+
+        // Get the mouse coordinates
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
 
         // Render the scene
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -196,6 +252,18 @@ int main() {
         drawFace(renderer, startX + 150, startY, squareSize, rightFace);  // Blue face
         drawFace(renderer, startX, startY - 150, squareSize, topFace);    // Orange face
         drawFace(renderer, startX, startY + 150, squareSize, bottomFace);  // Red face
+
+        // Define the rectangle for the button
+        SDL_Rect buttonRect = {buttonX, buttonY, buttonSize, buttonSize};
+
+        // Draw the button
+        if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
+            SDL_RenderCopy(renderer, buttonHoverTexture, NULL, &buttonRect);
+        } else {
+            SDL_RenderCopy(renderer, buttonTexture, NULL, &buttonRect);
+        }
+
+        SDL_RenderPresent(renderer);
 
         SDL_RenderPresent(renderer);
     }
