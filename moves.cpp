@@ -18,7 +18,7 @@ class Cube
             faces=6;
             sides=4;
             cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
-            faceNames={'B','W','Y','O','R','G'};
+            faceNames={'N','B','R','Y','A','G'};
             reset();
         }
         void horizontal(bool right,int fila)
@@ -142,7 +142,7 @@ class Cube
             {
                 for(int j=0;j<length*(faces-2);j++)
                 {
-                    cout<<cube[j/length][i][j%length]<<"  ";
+                    cout<<faceNames[cube[j/length][i][j%length]]<<"  ";
                 }
                 cout<<endl;
             }
@@ -172,7 +172,7 @@ class Cube
                 cout<<stline;
                 for(int j=0;j<length;j++)
                 {
-                    cout<<cube[id][i][j]<<"  ";
+                    cout<<faceNames[cube[id][i][j]]<<"  ";
                 }
                 cout<<endl;
             }
