@@ -7,11 +7,11 @@ using namespace std;
 typedef long long ll;
 class Cube
 {
+    public:
     int faces,length,sides,sz;
     vector<vector<vector<int>>> cube;
     vector<char> faceNames;
-    queue<string> q;  
-    public:
+    
         Cube()
         {
             length=3;
@@ -277,7 +277,7 @@ class Cube
 
 
 
-int main()
+/*int main()
 {
     Cube game;
     int t=0; cin>>t;
@@ -308,4 +308,4 @@ int main()
         }
     }
     return 0;
-}
+}*/
