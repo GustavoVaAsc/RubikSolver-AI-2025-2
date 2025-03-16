@@ -4,21 +4,21 @@
 #define X first 
 #define Y second
 using namespace std;
-
+typedef long long ll;
 class Cube
 {
+    public:
     int faces,length,sides,sz;
     vector<vector<vector<int>>> cube;
     vector<char> faceNames;
-    queue<string> q;  
-    public:
+    
         Cube()
         {
             length=3;
             faces=6;
             sides=4;
             cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
-            faceNames={'B','W','Y','O','R','G'};
+            faceNames={'N','G','R','A','B','Y'};
             reset();
         }
         void horizontal(bool right,int fila)
@@ -64,8 +64,8 @@ class Cube
                     aux=cube[4][i][columna];
                     cube[4][i][columna]=cube[1][i][columna];
                     cube[1][i][columna]=cube[5][i][columna];
-                    cube[5][i][columna]=cube[3][i][length-1-columna];
-                    cube[3][i][length-1-columna]=aux;
+                    cube[5][i][columna]=cube[3][length-1-i][length-1-columna];
+                    cube[3][length-1-i][length-1-columna]=aux;
                 }
             }
             else
@@ -75,13 +75,13 @@ class Cube
                     aux=cube[5][i][columna];
                     cube[5][i][columna]=cube[1][i][columna];
                     cube[1][i][columna]=cube[4][i][columna];
-                    cube[4][i][columna]=cube[3][i][length-1-columna];
-                    cube[3][i][length-1-columna]=aux;
+                    cube[4][i][columna]=cube[3][length-1-i][length-1-columna];
+                    cube[3][length-1-i][length-1-columna]=aux;
                 }
             }
             if(columna==0)
             {
-                rotateFace(0,up);
+                rotateFace(0,!up);
             }
             if(columna==length-1){
                 rotateFace(2,up);
@@ -114,11 +114,11 @@ class Cube
             }
             if(depth==length-1)
             {
-                rotateFace(right,1);
+                rotateFace(1,right);
             }
             if(depth==0)
             {
-                rotateFace(!right,3);
+                rotateFace(3,!right);
             }
         }
 
@@ -142,7 +142,7 @@ class Cube
             {
                 for(int j=0;j<length*(faces-2);j++)
                 {
-                    cout<<cube[j/length][i][j%length]<<"  ";
+                    cout<<faceNames[cube[j/length][i][j%length]]<<"  ";
                 }
                 cout<<endl;
             }
@@ -151,16 +151,16 @@ class Cube
         void rotateFace(int face,bool right)
         {
             int aux;
-            pair<int,int> cor,newCor;
-            for(int i=0;i<length;i++)
+            pair<int,int> cor,pastCor;
+            for(int i=0;i<(length+1)/2;i++)
             {
                 aux=cube[face][0][i];
                 cor.X=0; cor.Y=i;
                 for(int j=0;j<sides-1;j++)
                 {
-                    newCor=getCoord(right,cor);
-                    cube[face][cor.X][cor.Y]=cube[face][newCor.X][newCor.Y];
-                    cor=newCor;
+                    pastCor=getCoord(!right,cor);
+                    cube[face][cor.X][cor.Y]=cube[face][pastCor.X][pastCor.Y];
+                    cor=pastCor;
                 }
                 cube[face][cor.X][cor.Y]=aux;
             }
@@ -172,7 +172,7 @@ class Cube
                 cout<<stline;
                 for(int j=0;j<length;j++)
                 {
-                    cout<<cube[id][i][j]<<"  ";
+                    cout<<faceNames[cube[id][i][j]]<<"  ";
                 }
                 cout<<endl;
             }
@@ -187,10 +187,12 @@ class Cube
                 {
                     newCord.X=actualcoord.Y;
                     newCord.Y=length-1;
+                    return newCord;
                 }
                 else{
                     newCord.X=length-1-actualcoord.Y;
                     newCord.Y=0;
+                    return newCord;
                 }
             }
             if(actualcoord.Y==0)
@@ -199,23 +201,27 @@ class Cube
                 {
                     newCord.X=0;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
                 else{
                     newCord.X=length-1;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
             }
             if(actualcoord.X==length-1)
             {
                 if(right)
                 {
-                    newCord.Y=length-1;
-                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=0;
+                    newCord.X=actualcoord.Y;
+                    return newCord;
                 }
                 else
                 {
-                    newCord.X=actualcoord.Y;
-                    newCord.Y=0;
+                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=length-1;
+                    return newCord;
                 }
             }
             if(actualcoord.Y==length-1)
@@ -224,23 +230,58 @@ class Cube
                 {
                     newCord.X=length-1;
                     newCord.Y=length-1-actualcoord.X;
+                    return newCord;
                 }
                 else{
                     newCord.X=0;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
             }
             return newCord;
             
         }
+        vector<ll> getH()
+        {
+            vector<ll> h(faces);
+            ll base,sum;
+            for(int i=0;i<faces;i++)
+            {
+                base=1;
+                for(int j=0;j<length;j++)
+                {
+                    for(int k=0;k<length;k++)
+                    {
+                        h[i]+=base*cube[i][j][k];
+                        base*=faces;
+                    }
+                }
+            }
+            return h;
+        } 
+        void reconstruct(vector<ll> h)
+        {
+            for(int i=0;i<faces;i++)
+            {
+                for(int j=0;j<length;j++)
+                {
+                    for(int k=0;k<length;k++)
+                    {
+                        cube[i][j][k]=h[i]%faces;
+                        h[i]/=faces;
+                    }
+                }
+            }
+        }
 };
 
 
 
-int main()
+/*int main()
 {
     Cube game;
-    while(true)
+    int t=0; cin>>t;
+    while(t--)
     {
         game.showCube();
         cout<<"1 Para movimiento horizontal\n2 Para vertical\n3 Para rotar\n";
@@ -267,4 +308,4 @@ int main()
         }
     }
     return 0;
-}
+}*/
