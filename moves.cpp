@@ -7,15 +7,16 @@ using namespace std;
 
 class Cube
 {
-    int faces=6;
-    int length=3;
-    int sides=4;
+    int faces,length,sides,sz;
     vector<vector<vector<int>>> cube;
     vector<char> faceNames;
     queue<string> q;  
     public:
         Cube()
         {
+            length=3;
+            faces=6;
+            sides=4;
             cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
             faceNames={'B','W','Y','O','R','G'};
             reset();
@@ -96,8 +97,8 @@ class Cube
                 {
                     aux=cube[4][depth][i];
                     cube[4][depth][i]=cube[0][length-1-i][depth];
-                    cube[0][length-1-i][depth]=cube[5][length-1-depth][length-i];
-                    cube[5][length-1-depth][length-i]=cube[2][i][length-1-depth];
+                    cube[0][length-1-i][depth]=cube[5][length-1-depth][length-1-i];
+                    cube[5][length-1-depth][length-1-i]=cube[2][i][length-1-depth];
                     cube[2][i][length-1-depth]=aux;
                 }
             }
@@ -106,9 +107,9 @@ class Cube
                 {
                     aux=cube[4][depth][i];
                     cube[4][depth][i]=cube[2][i][length-1-depth];
-                    cube[2][i][length-1-depth]=cube[5][depth][i];
-                    cube[5][depth][i]=cube[0][i][length-1-depth];
-                    cube[0][i][length-1-depth]=aux;
+                    cube[2][i][length-1-depth]=cube[5][length-1-depth][length-1-i];
+                    cube[5][length-1-depth][length-1-i]=cube[0][length-1-i][depth];
+                    cube[0][length-1-i][depth]=aux;
                 }
             }
             if(depth==length-1)
@@ -242,21 +243,27 @@ int main()
     while(true)
     {
         game.showCube();
-        cout<<"1 Para movimiento horizontal\n2 Para vertical\n3Para ";
-        int opt;
+        cout<<"1 Para movimiento horizontal\n2 Para vertical\n3 Para rotar\n";
+        int opt;bool flag;
         cin>>opt;
-        if(opt)
+        switch(opt)
         {
-            bool flag;
-            int fila;
-            cin>>fila>>flag;
-            game.horizontal(flag,fila);
-        }
-        else{
-            bool flag;
-            int columna;
-            cin>>columna>>flag;
-            game.vertical(flag,columna);
+            case 1:
+                int fila;
+                cin>>fila>>flag;
+                game.horizontal(flag,fila);
+                break;
+
+            case 2:
+                int columna;
+                cin>>columna>>flag;
+                game.vertical(flag,columna);
+                break;
+            case 3:
+                int depth;
+                cin>>depth>>flag;
+                game.rotar(flag,depth);
+                break;
         }
     }
     return 0;
