@@ -4,7 +4,7 @@
 #define X first 
 #define Y second
 using namespace std;
-
+typedef long long ll;
 class Cube
 {
     int faces,length,sides,sz;
@@ -243,14 +243,16 @@ class Cube
             return newCord;
             
         }
+        
 };
 
 
 
-int main()
+int m()
 {
     Cube game;
-    while(true)
+    int t; cin>>t;
+    while(t--)
     {
         game.showCube();
         cout<<"1 Para movimiento horizontal\n2 Para vertical\n3 Para rotar\n";
