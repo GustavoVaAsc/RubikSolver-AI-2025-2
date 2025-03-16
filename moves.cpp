@@ -18,7 +18,7 @@ class Cube
             faces=6;
             sides=4;
             cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
-            faceNames={'N','B','R','Y','A','G'};
+            faceNames={'N','G','R','A','B','Y'};
             reset();
         }
         void horizontal(bool right,int fila)
@@ -158,12 +158,10 @@ class Cube
                 cor.X=0; cor.Y=i;
                 for(int j=0;j<sides-1;j++)
                 {
-                    cout<<cor.X<<" "<<cor.Y<<endl;
                     pastCor=getCoord(!right,cor);
                     cube[face][cor.X][cor.Y]=cube[face][pastCor.X][pastCor.Y];
                     cor=pastCor;
                 }
-                cout<<cor.X<<" "<<cor.Y<<endl;
                 cube[face][cor.X][cor.Y]=aux;
             }
         }
@@ -243,15 +241,46 @@ class Cube
             return newCord;
             
         }
-        
+        vector<ll> getH()
+        {
+            vector<ll> h(faces);
+            ll base,sum;
+            for(int i=0;i<faces;i++)
+            {
+                base=1;
+                for(int j=0;j<length;j++)
+                {
+                    for(int k=0;k<length;k++)
+                    {
+                        h[i]+=base*cube[i][j][k];
+                        base*=faces;
+                    }
+                }
+            }
+            return h;
+        } 
+        void reconstruct(vector<ll> h)
+        {
+            for(int i=0;i<faces;i++)
+            {
+                for(int j=0;j<length;j++)
+                {
+                    for(int k=0;k<length;k++)
+                    {
+                        cube[i][j][k]=h[i]%faces;
+                        h[i]/=faces;
+                    }
+                }
+            }
+        }
 };
 
 
 
-int m()
+int main()
 {
     Cube game;
-    int t; cin>>t;
+    int t=0; cin>>t;
     while(t--)
     {
         game.showCube();
