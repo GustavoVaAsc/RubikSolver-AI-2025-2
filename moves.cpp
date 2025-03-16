@@ -64,8 +64,8 @@ class Cube
                     aux=cube[4][i][columna];
                     cube[4][i][columna]=cube[1][i][columna];
                     cube[1][i][columna]=cube[5][i][columna];
-                    cube[5][i][columna]=cube[3][i][length-1-columna];
-                    cube[3][i][length-1-columna]=aux;
+                    cube[5][i][columna]=cube[3][length-1-i][length-1-columna];
+                    cube[3][length-1-i][length-1-columna]=aux;
                 }
             }
             else
@@ -75,13 +75,13 @@ class Cube
                     aux=cube[5][i][columna];
                     cube[5][i][columna]=cube[1][i][columna];
                     cube[1][i][columna]=cube[4][i][columna];
-                    cube[4][i][columna]=cube[3][i][length-1-columna];
-                    cube[3][i][length-1-columna]=aux;
+                    cube[4][i][columna]=cube[3][length-1-i][length-1-columna];
+                    cube[3][length-1-i][length-1-columna]=aux;
                 }
             }
             if(columna==0)
             {
-                rotateFace(0,up);
+                rotateFace(0,!up);
             }
             if(columna==length-1){
                 rotateFace(2,up);
@@ -114,11 +114,11 @@ class Cube
             }
             if(depth==length-1)
             {
-                rotateFace(right,1);
+                rotateFace(1,right);
             }
             if(depth==0)
             {
-                rotateFace(!right,3);
+                rotateFace(3,!right);
             }
         }
 
@@ -151,17 +151,19 @@ class Cube
         void rotateFace(int face,bool right)
         {
             int aux;
-            pair<int,int> cor,newCor;
-            for(int i=0;i<length;i++)
+            pair<int,int> cor,pastCor;
+            for(int i=0;i<(length+1)/2;i++)
             {
                 aux=cube[face][0][i];
                 cor.X=0; cor.Y=i;
                 for(int j=0;j<sides-1;j++)
                 {
-                    newCor=getCoord(right,cor);
-                    cube[face][cor.X][cor.Y]=cube[face][newCor.X][newCor.Y];
-                    cor=newCor;
+                    cout<<cor.X<<" "<<cor.Y<<endl;
+                    pastCor=getCoord(!right,cor);
+                    cube[face][cor.X][cor.Y]=cube[face][pastCor.X][pastCor.Y];
+                    cor=pastCor;
                 }
+                cout<<cor.X<<" "<<cor.Y<<endl;
                 cube[face][cor.X][cor.Y]=aux;
             }
         }
@@ -187,10 +189,12 @@ class Cube
                 {
                     newCord.X=actualcoord.Y;
                     newCord.Y=length-1;
+                    return newCord;
                 }
                 else{
                     newCord.X=length-1-actualcoord.Y;
                     newCord.Y=0;
+                    return newCord;
                 }
             }
             if(actualcoord.Y==0)
@@ -199,23 +203,27 @@ class Cube
                 {
                     newCord.X=0;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
                 else{
                     newCord.X=length-1;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
             }
             if(actualcoord.X==length-1)
             {
                 if(right)
                 {
-                    newCord.Y=length-1;
-                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=0;
+                    newCord.X=actualcoord.Y;
+                    return newCord;
                 }
                 else
                 {
-                    newCord.X=actualcoord.Y;
-                    newCord.Y=0;
+                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=length-1;
+                    return newCord;
                 }
             }
             if(actualcoord.Y==length-1)
@@ -224,10 +232,12 @@ class Cube
                 {
                     newCord.X=length-1;
                     newCord.Y=length-1-actualcoord.X;
+                    return newCord;
                 }
                 else{
                     newCord.X=0;
                     newCord.Y=actualcoord.X;
+                    return newCord;
                 }
             }
             return newCord;
