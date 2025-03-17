@@ -1,8 +1,10 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include<algorithm>
 #define X first 
 #define Y second
+#define all(v) v.begin(),v.end()
 using namespace std;
 typedef long long ll;
 
@@ -36,7 +38,7 @@ class Cube
             faces=6;
             sides=4;
             cube=vector<vector<vector<Cell>>> (faces,vector<vector<Cell>> (length,vector<Cell> (length)));
-            faceNames={'N','G','R','A','B','Y'};
+            faceNames={'N','B','R','A','G','Y'};
             reset();
         }
         void horizontal(bool right,int fila)
@@ -153,7 +155,7 @@ class Cube
                 }
             }
         }
-        void showCube()
+        void showCube() 
         {
             showFace(4,"\t ");
             for(int i=0;i<length;i++)
@@ -183,7 +185,7 @@ class Cube
                 cube[face][cor.X][cor.Y]=aux;
             }
         }
-        void showFace(int id,string stline)
+        void showFace(int id,string stline) 
         {
             for(int i=0;i<length;i++)
             {
@@ -292,9 +294,11 @@ class Cube
             }
         }
         
-        bool operator==(const Cube& other) const
+        bool operator==(Cube& other) 
         {
-            return this->getH()==other.getH();
+            vector<ll> a=getH(),b=other.getH();
+            sort(all(a));
+            return a==b;
         }
 
         bool operator!=(const Cube& other) const

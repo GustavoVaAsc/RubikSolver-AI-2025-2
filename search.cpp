@@ -31,7 +31,7 @@ class Graph
         {
             srand(time(NULL));
             int possibleMovs;
-            int t=rand()%18,opt;
+            int t=rand()%5,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -76,6 +76,7 @@ class Graph
             if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
                 return true;
             }
+            return false;
         }       
 
 
@@ -103,7 +104,7 @@ class Graph
                 }
             }
 
-            return manhattanDist + misplaced;
+            return -(manhattanDist + misplaced);
         }
 
 
@@ -122,6 +123,7 @@ class Graph
             while(!q.empty())
             {
                 aux=q.top().Y;
+                aux.showCube();
                 q.pop();
                 for(int i=1;i<=3;i++)
                 {
@@ -129,10 +131,10 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
-                            if((i<3 && k==1) || (i==3 && k==0))
+                            /*if((i<3 && k==1) || (i==3 && k==0))
                             {
                                 continue;
-                            }
+                            }*/
                             neighbor=aux;
                             switch(i)
                             {   
@@ -146,6 +148,8 @@ class Graph
                                     neighbor.rotar(j,k);
                                     break;
                             }
+                            Cube c=neighbor;
+                            
                             if(visited.find(neighbor)==visited.end())
                             {
                                 path[neighbor]=aux;
@@ -157,6 +161,7 @@ class Graph
                                     return;
                                 }
                                 q.push({0,neighbor});
+                                cout<<heuPhase1(neighbor)<<" ";
                             }
                             
                         }
