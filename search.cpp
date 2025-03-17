@@ -15,13 +15,13 @@
 class Graph
 {
     public:
-        priority_queue<pair<ll,vector<ll>>> q;
+        priority_queue<pair<ll,Cube>> q;
         Cube game;
-        map<vector<ll>,vector<ll>> path;
-        set<vector<ll>> visited;      
-        map<vector<ll>,vector<int>> mov;
-        map<vector<ll>,ll> dist;
-        vector<ll> f,s;
+        map<Cube,Cube> path;
+        set<Cube> visited;      
+        map<Cube,vector<int>> mov;
+        map<Cube,ll> dist;
+        Cube f,s;
         Graph()
         {
             game.reset();
@@ -85,49 +85,21 @@ class Graph
 
         ll heuPhase1(vector<ll> v)
         {
-            game.reconstruct(v);
-            int incorrect=0;
-            bool hz[game.length]={false};
-            bool vt[game.length]={false};
-            for(int i=0;i<game.length*game.length;i++)
-            {
-                if(game.cube[1][i/game.length][i%game.length]!=1) incorrect++;
-                else{
-                    hz[i/game.length]=true;
-                    vt[i%game.length]=true;
-                }
-            }
-            int d=0;
-            for(int i=0;i<game.faces;i++)
-            {
-                for(int j=0;j<game.length;j++)
-                {
-                    for(int k=0;k<game.length;k++)
-                    {
-                        if(game.cube[i][j][k]==1 && i!=1)
-                        {
-                            d+=(i==3)+(hz[j] || vt[k]);
-                        }
-                    }
-                }
-            }
-            return -(incorrect+d);
+            return 0;
         }
 
         void Astar()
         {
-            vector<ll> aux=game.getH();
+            Cube aux=game;
             s=aux;
-
             q.push({0,aux});
-            path[aux]={-1};
             visited.insert(aux);
-            if(finalState(aux))
+            if(finalState(aux.getH()))
             {
                 f=aux;
                 return;
             }
-            vector<ll> neighbor,c;
+            Cube neighbor;
             while(!q.empty())
             {
                 aux=q.top().Y;
@@ -142,33 +114,30 @@ class Graph
                             {
                                 continue;
                             }*/
-                            game.reconstruct(aux);
+                            neighbor=aux;
                             switch(i)
                             {   
                                 case 1:
-                                    game.horizontal(j,k);
+                                    neighbor.horizontal(j,k);
                                     break;
                                 case 2:
-                                    game.vertical(j,k);
+                                    neighbor.vertical(j,k);
                                     break;
                                 case 3:
-                                    game.rotar(j,k);
+                                    neighbor.rotar(j,k);
                                     break;
                             }
-                            neighbor=game.getH();
-                            c=neighbor;
-                            sort(all(neighbor));
                             if(visited.find(neighbor)==visited.end())
                             {
-                                path[c]=aux;
+                                path[neighbor]=aux;
                                 mov[aux]={i,j,k};
                                 visited.insert(neighbor);
-                                if(finalState(neighbor))
+                                if(finalState(neighbor.getH()))
                                 {
-                                    f=c;
+                                    f=neighbor;
                                     return;
                                 }
-                                q.push({0,game.getH()});
+                                q.push({0,neighbor});
                             }
                             
                         }

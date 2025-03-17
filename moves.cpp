@@ -6,27 +6,42 @@
 using namespace std;
 typedef long long ll;
 
+class Cell
+{
+    public:
+        int color,face,x,y;
+        Cell()
+        {
+
+        }
+        Cell(int color, int face,int x,int y)
+        {
+            this->color=color;
+            this->face=face;
+            this->x=x;
+            this->y=y;
+        }
+};
 
 
 class Cube
 {
     public:
     int faces,length,sides,sz;
-    vector<vector<vector<int>>> cube;
-    vector<char> faceNames;
-    
+    vector<vector<vector<Cell>>> cube;
+    vector<char> faceNames; 
         Cube()
         {
             length=3;
             faces=6;
             sides=4;
-            cube=vector<vector<vector<int>>> (faces,vector<vector<int>> (length,vector<int> (length)));
+            cube=vector<vector<vector<Cell>>> (faces,vector<vector<Cell>> (length,vector<Cell> (length)));
             faceNames={'N','G','R','A','B','Y'};
             reset();
         }
         void horizontal(bool right,int fila)
         {
-            int aux;
+            Cell aux;
             if(right)
             {
                 for(int i=0;i<length;i++)
@@ -59,7 +74,7 @@ class Cube
         
         void vertical(bool up,int columna)
         {
-            int aux;
+            Cell aux;
             if(up)
             {
                 for(int i=0;i<length;i++)
@@ -93,7 +108,7 @@ class Cube
 
         void rotar(bool right,int depth)
         {
-            int aux;
+            Cell aux;
             if(right)
             {
                 for(int i=0;i<length;i++)
@@ -133,7 +148,7 @@ class Cube
                 {
                     for(int k=0;k<length;k++)
                     {
-                        cube[i][j][k]=i;
+                        cube[i][j][k].color=i;
                     }
                 }
             }
@@ -145,7 +160,7 @@ class Cube
             {
                 for(int j=0;j<length*(faces-2);j++)
                 {
-                    cout<<faceNames[cube[j/length][i][j%length]]<<"  ";
+                    cout<<faceNames[cube[j/length][i][j%length].color]<<"  ";
                 }
                 cout<<endl;
             }
@@ -153,7 +168,7 @@ class Cube
         }
         void rotateFace(int face,bool right)
         {
-            int aux;
+            Cell aux;
             pair<int,int> cor,pastCor;
             for(int i=0;i<(length+1)/2;i++)
             {
@@ -175,7 +190,7 @@ class Cube
                 cout<<stline;
                 for(int j=0;j<length;j++)
                 {
-                    cout<<faceNames[cube[id][i][j]]<<"  ";
+                    cout<<faceNames[cube[id][i][j].color]<<"  ";
                 }
                 cout<<endl;
             }
@@ -244,7 +259,7 @@ class Cube
             return newCord;
             
         }
-        vector<ll> getH()
+        vector<ll> getH() const
         {
             vector<ll> h(faces);
             ll base,sum;
@@ -255,7 +270,7 @@ class Cube
                 {
                     for(int k=0;k<length;k++)
                     {
-                        h[i]+=base*cube[i][j][k];
+                        h[i]+=base*cube[i][j][k].color;
                         base*=faces;
                     }
                 }
@@ -270,13 +285,44 @@ class Cube
                 {
                     for(int k=0;k<length;k++)
                     {
-                        cube[i][j][k]=h[i]%faces;
+                        cube[i][j][k].color=h[i]%faces;
                         h[i]/=faces;
                     }
                 }
             }
         }
-};
+        
+        bool operator==(const Cube& other) const
+        {
+            return this->getH()==other.getH();
+        }
+
+        bool operator!=(const Cube& other) const
+        {
+            return this->getH()!=other.getH();
+        }
+        bool operator<(const Cube& other) const 
+        {
+            return this->getH()<other.getH();
+        }
+    
+        // Sobrecargar el operador <=
+        bool operator<=(const Cube& other) const 
+        {
+            return this->getH()<=other.getH();
+        }
+    
+        // Sobrecargar el operador >
+        bool operator>(const Cube& other) const {
+            return !(this->getH() <= other.getH());
+        }
+    
+        // Sobrecargar el operador >=
+        bool operator>=(const Cube& other) const 
+        {
+            return !(this->getH() < other.getH());
+        }
+    };
 
 
 
