@@ -25,7 +25,7 @@ class Graph
         void randomize()
         {
             srand(time(NULL));
-            int t=rand()%5,opt;
+            int t=rand()%10,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -87,7 +87,10 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
-
+                            /*if((i<3 && k==1) || (i==3 && k==0))
+                            {
+                                continue;
+                            }*/
                             game.reconstruct(aux);
                             switch(i)
                             {   
