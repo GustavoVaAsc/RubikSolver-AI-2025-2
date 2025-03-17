@@ -31,7 +31,7 @@ class Graph
         {
             srand(time(NULL));
             int possibleMovs;
-            int t=rand()%18,opt;
+            int t=rand()%5,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -72,10 +72,11 @@ class Graph
         
         bool finalPhase1(vector<ll> h)
         {
-            if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
+            if(h[0]==0){
                 return true;
             }
-        }
+            return false;
+        }       
 
 
         ll heuPhase1(Cube c)
@@ -102,7 +103,7 @@ class Graph
                 }
             }
 
-            return manhattanDist + misplaced;
+            return -(manhattanDist + misplaced);
         }
 
 
@@ -112,7 +113,7 @@ class Graph
             s=aux;
             q.push({0,aux});
             visited.insert(aux);
-            if(finalState(aux.getH()))
+            if(finalPhase1(aux.getH()))
             {
                 f=aux;
                 return;
@@ -121,6 +122,7 @@ class Graph
             while(!q.empty())
             {
                 aux=q.top().Y;
+                aux.showCube();
                 q.pop();
                 for(int i=1;i<=3;i++)
                 {
@@ -145,17 +147,20 @@ class Graph
                                     neighbor.rotar(j,k);
                                     break;
                             }
+                            Cube c=neighbor;
+                            
                             if(visited.find(neighbor)==visited.end())
                             {
                                 path[neighbor]=aux;
                                 mov[aux]={i,j,k};
                                 visited.insert(neighbor);
-                                if(finalState(neighbor.getH()))
+                                if(finalPhase1(neighbor.getH()))
                                 {
                                     f=neighbor;
                                     return;
                                 }
                                 q.push({0,neighbor});
+                                cout<<heuPhase1(neighbor)<<" ";
                             }
                             
                         }
