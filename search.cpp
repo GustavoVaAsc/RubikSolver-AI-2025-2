@@ -6,6 +6,7 @@
 #include<map>
 #include<algorithm>
 #include<stack>
+#include<set>
 #define all(v) v.begin(),v.end()
 class Graph
 {
@@ -13,7 +14,9 @@ class Graph
         queue<vector<ll>> q;
         Cube game;
         map<vector<ll>,vector<ll>> path;
-        map<vector<ll>,vector<ll>> moves;
+        set<vector<ll>> visited;
+        map<vector<ll>,vector<int>> mov;
+        vector<ll> f,s;
         Graph()
         {
             game.reset();
@@ -22,7 +25,7 @@ class Graph
         void randomize()
         {
             srand(time(NULL));
-            int t=rand()%10,opt;
+            int t=rand()%5,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -64,13 +67,16 @@ class Graph
         void bfs()
         {
             vector<ll> aux=game.getH();
+            s=aux;
             q.push(aux);
             path[aux]={-1};
+            visited.insert(aux);
             if(finalState(aux))
             {
+                f=aux;
                 return;
             }
-            vector<ll> neighbor;
+            vector<ll> neighbor,c;
             while(!q.empty())
             {
                 aux=q.front();
@@ -81,6 +87,7 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
+
                             game.reconstruct(aux);
                             switch(i)
                             {   
@@ -92,16 +99,21 @@ class Graph
                                     break;
                                 case 3:
                                     game.rotar(j,k);
+                                    break;
                             }
                             neighbor=game.getH();
-                            path[neighbor]=aux;
+                            c=neighbor;
                             sort(all(neighbor));
-                            if(finalState(neighbor))
+                            if(visited.find(neighbor)==visited.end())
                             {
-                                return;
-                            }
-                            if(path.count(neighbor)==0)
-                            {
+                                path[c]=aux;
+                                mov[aux]={i,j,k};
+                                visited.insert(neighbor);
+                                if(finalState(neighbor))
+                                {
+                                    f=c;
+                                    return;
+                                }
                                 q.push(game.getH());
                             }
                             
@@ -113,12 +125,21 @@ class Graph
 
         void printPath()
         {
-            vector<ll> p=path[game.getH()];
-            vector<int> s;
-            while(p[0]!=-1)
+            stack<vector<int>> pile;
+            while(f!=s)
             {
-                p=path[p];
+                f=path[f];
+                pile.push(mov[f]);
                 
+            }
+            while(!pile.empty())
+            {
+                for(auto a:pile.top())
+                {
+                    cout<<a<<" ";
+                }
+                cout<<endl;
+                pile.pop();
             }
         }
     };
@@ -127,9 +148,14 @@ int main()
 {
     Graph g;
     g.game.showCube();
+    clock_t start, end;
+    double cpu_time_used;
+    start=clock();
     g.bfs();
+    end=clock();
     g.game.showCube();
     g.printPath();
-    
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    cout<<cpu_time_used<<endl;
     return 0;    
 }
