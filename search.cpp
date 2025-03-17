@@ -78,15 +78,34 @@ class Graph
             }
         }
 
-        int Manhattan()
-        {
 
-        }        
-
-        ll heuPhase1(vector<ll> v)
+        ll heuPhase1(Cube c)
         {
-            return 0;
+            ll misplaced = 0;
+            ll manhattanDist = 0;
+
+            for(int i=0; i<c.faces; i++){
+                for(int j=0; j<c.length; j++) {
+                    for(int k=0; k<c.length; k++){
+                        int color = c.cube[i][j][k].color;
+
+                
+                        int targetX = color / c.length;
+                        int targetY = color % c.length;
+                        
+                        int dist = abs(targetX - j) + abs(targetY - k);
+                        manhattanDist += dist;
+
+                        if(c.cube[i][j][k].color != color){
+                            misplaced++;
+                        }
+                    }
+                }
+            }
+
+            return manhattanDist + misplaced;
         }
+
 
         void Astar()
         {
