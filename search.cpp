@@ -63,10 +63,9 @@ class Graph
         {
             for(int i=0;i<game.faces;i++)
             {
-                if(h[i]!=i*((pow(game.faces,game.length*game.length))-1)/(game.faces-1))
-                {
-                    return false;
-                }
+                if(h[i]==i*((pow(game.faces,game.length*game.length))-1)/(game.faces-1)) return true;
+                
+                if(h[i]!=i*((pow(game.faces,game.length*game.length))-1)/(game.faces-1)) return false;   
             }
             return true;
         }
@@ -129,10 +128,10 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
-                            /*if((i<3 && k==1) || (i==3 && k==0))
+                            if(k==1)
                             {
                                 continue;
-                            }*/
+                            }
                             neighbor=aux;
                             switch(i)
                             {   
