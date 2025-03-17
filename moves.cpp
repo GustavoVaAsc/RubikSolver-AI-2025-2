@@ -298,6 +298,7 @@ class Cube
         {
             vector<ll> a=getH(),b=other.getH();
             sort(all(a));
+            sort(all(b));
             return a==b;
         }
 

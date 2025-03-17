@@ -73,7 +73,7 @@ class Graph
         
         bool finalPhase1(vector<ll> h)
         {
-            if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
+            if(h[0]==0){
                 return true;
             }
             return false;
