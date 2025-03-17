@@ -5,6 +5,9 @@
 #define Y second
 using namespace std;
 typedef long long ll;
+
+
+
 class Cube
 {
     public:

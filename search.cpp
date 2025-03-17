@@ -7,15 +7,20 @@
 #include<algorithm>
 #include<stack>
 #include<set>
+#include<fstream>
+
 #define all(v) v.begin(),v.end()
+#define X first 
+#define Y second
 class Graph
 {
     public:
-        queue<vector<ll>> q;
+        priority_queue<pair<ll,vector<ll>>> q;
         Cube game;
         map<vector<ll>,vector<ll>> path;
-        set<vector<ll>> visited;
+        set<vector<ll>> visited;      
         map<vector<ll>,vector<int>> mov;
+        map<vector<ll>,ll> dist;
         vector<ll> f,s;
         Graph()
         {
@@ -25,7 +30,8 @@ class Graph
         void randomize()
         {
             srand(time(NULL));
-            int t=rand()%10,opt;
+            int possibleMovs;
+            int t=rand()%18,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -64,11 +70,56 @@ class Graph
             }
             return true;
         }
-        void bfs()
+        
+        bool finalPhase1(vector<ll> h)
+        {
+            if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
+                return true;
+            }
+        }
+
+        int Manhattan()
+        {
+
+        }        
+
+        ll heuPhase1(vector<ll> v)
+        {
+            game.reconstruct(v);
+            int incorrect=0;
+            bool hz[game.length]={false};
+            bool vt[game.length]={false};
+            for(int i=0;i<game.length*game.length;i++)
+            {
+                if(game.cube[1][i/game.length][i%game.length]!=1) incorrect++;
+                else{
+                    hz[i/game.length]=true;
+                    vt[i%game.length]=true;
+                }
+            }
+            int d=0;
+            for(int i=0;i<game.faces;i++)
+            {
+                for(int j=0;j<game.length;j++)
+                {
+                    for(int k=0;k<game.length;k++)
+                    {
+                        if(game.cube[i][j][k]==1 && i!=1)
+                        {
+                            d+=(i==3)+(hz[j] || vt[k]);
+                        }
+                    }
+                }
+            }
+            return -(incorrect+d);
+        }
+
+        void Astar()
         {
             vector<ll> aux=game.getH();
             s=aux;
-            q.push(aux);
+
+            q.push({0,aux});
             path[aux]={-1};
             visited.insert(aux);
             if(finalState(aux))
@@ -79,7 +130,7 @@ class Graph
             vector<ll> neighbor,c;
             while(!q.empty())
             {
-                aux=q.front();
+                aux=q.top().Y;
                 q.pop();
                 for(int i=1;i<=3;i++)
                 {
@@ -117,7 +168,7 @@ class Graph
                                     f=c;
                                     return;
                                 }
-                                q.push(game.getH());
+                                q.push({0,game.getH()});
                             }
                             
                         }
@@ -125,6 +176,7 @@ class Graph
                 }
             }
         }
+
 
         void printPath()
         {
@@ -154,7 +206,7 @@ int main()
     clock_t start, end;
     double cpu_time_used;
     start=clock();
-    g.bfs();
+    g.Astar();
     end=clock();
     g.game.showCube();
     g.printPath();
