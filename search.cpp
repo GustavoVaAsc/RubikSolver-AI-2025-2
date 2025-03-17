@@ -76,7 +76,7 @@ class Graph
             if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
                 return true;
             }
-        }
+        }       
 
 
         ll heuPhase1(Cube c)
@@ -113,7 +113,7 @@ class Graph
             s=aux;
             q.push({0,aux});
             visited.insert(aux);
-            if(finalState(aux.getH()))
+            if(finalPhase1(aux.getH()))
             {
                 f=aux;
                 return;
@@ -129,10 +129,10 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
-                            /*if((i<3 && k==1) || (i==3 && k==0))
+                            if((i<3 && k==1) || (i==3 && k==0))
                             {
                                 continue;
-                            }*/
+                            }
                             neighbor=aux;
                             switch(i)
                             {   
@@ -151,7 +151,7 @@ class Graph
                                 path[neighbor]=aux;
                                 mov[aux]={i,j,k};
                                 visited.insert(neighbor);
-                                if(finalState(neighbor.getH()))
+                                if(finalPhase1(neighbor.getH()))
                                 {
                                     f=neighbor;
                                     return;
