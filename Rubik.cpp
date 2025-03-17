@@ -14,6 +14,12 @@ SDL_Color yellow = {255, 255, 0, 255};  // Yellow - 3
 SDL_Color orange = {255, 165, 0, 255};  // Orange - 4
 SDL_Color red = {255, 0, 0, 255};       // Red - 5
 
+// Matrix for transform color to number
+SDL_Color cube[6][CUBE_SIZE][CUBE_SIZE];
+int cube_number[6][CUBE_SIZE][CUBE_SIZE];
+
+
+
 // Function to draw a square with a specific color
 void drawSquare(SDL_Renderer* renderer, int x, int y, int size, SDL_Color color) {
     SDL_Rect rect = {x, y, size, size};
@@ -48,6 +54,24 @@ bool isInside(int x, int y, int mouseX, int mouseY, int squareSize) {
 // Function to check if the mouse is hovering over the button
 bool isButtonHovered(int buttonX, int buttonY, int buttonSize, int mouseX, int mouseY) {
     return mouseX >= buttonX && mouseX <= buttonX + buttonSize && mouseY >= buttonY && mouseY <= buttonY + buttonSize;
+}
+
+// Function to convert color to
+int getColorIndex(SDL_Color color) {
+    if (color.r == green.r && color.g == green.g && color.b == green.b && color.a == green.a) {
+        return 0;
+    } else if (color.r == white.r && color.g == white.g && color.b == white.b && color.a == white.a) {
+        return 1;
+    } else if (color.r == blue.r && color.g == blue.g && color.b == blue.b && color.a == blue.a) {
+        return 2;
+    } else if (color.r == yellow.r && color.g == yellow.g && color.b == yellow.b && color.a == yellow.a) {
+        return 3;
+    } else if (color.r == orange.r && color.g == orange.g && color.b == orange.b && color.a == orange.a) {
+        return 4;
+    } else if (color.r == red.r && color.g == red.g && color.b == red.b && color.a == red.a) {
+        return 5;
+    }
+    return -1;
 }
 
 int main() {
@@ -148,7 +172,29 @@ int main() {
 
                 // If the mouse clicks on the button, perform some action here
                 if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
-                    std::cout << "Button clicked!" << std::endl;
+
+                    for (int i = 0; i < CUBE_SIZE; i++) {
+                        for (int j = 0; j < CUBE_SIZE; j++) {
+                            cube[0][i][j] = leftFace[i][j];
+                            cube[1][i][j] = frontFace[i][j];
+                            cube[2][i][j] = rightFace[i][j];
+                            cube[3][i][j] = backFace[i][j];
+                            cube[4][i][j] = topFace[i][j];
+                            cube[5][i][j] = bottomFace[i][j];
+                        }
+                    }
+
+                    for (int i = 0; i < 6; i++) {
+                        for (int row = 0; row < CUBE_SIZE; row++) {
+                            for (int col = 0; col < CUBE_SIZE; col++) {
+                                int colorIndex = getColorIndex(cube[i][row][col]);
+                                cube_number[i][row][col] = colorIndex;
+                                std::cout << cube_number[i][row][col] << " ";
+                            }
+                            std::cout << std::endl;
+                        }
+                        std::cout << std::endl;
+                    }
                 }
 
                 // Check each square on the front face (White)
