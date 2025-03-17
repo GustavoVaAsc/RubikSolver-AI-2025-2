@@ -5,13 +5,15 @@
 #include<cmath>
 #include<map>
 #include<algorithm>
+#include<stack>
 #define all(v) v.begin(),v.end()
 class Graph
 {
     public:
         queue<vector<ll>> q;
         Cube game;
-        map<vector<ll>,vector<int>> path;
+        map<vector<ll>,vector<ll>> path;
+        map<vector<ll>,vector<ll>> moves;
         Graph()
         {
             game.reset();
@@ -63,6 +65,7 @@ class Graph
         {
             vector<ll> aux=game.getH();
             q.push(aux);
+            path[aux]={-1};
             if(finalState(aux))
             {
                 return;
@@ -71,7 +74,6 @@ class Graph
             while(!q.empty())
             {
                 aux=q.front();
-                game.reconstruct(aux);
                 q.pop();
                 for(int i=1;i<=3;i++)
                 {
@@ -79,6 +81,7 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
+                            game.reconstruct(aux);
                             switch(i)
                             {   
                                 case 1:
@@ -91,7 +94,7 @@ class Graph
                                     game.rotar(j,k);
                             }
                             neighbor=game.getH();
-                            path[neighbor]={i,j,k};
+                            path[neighbor]=aux;
                             sort(all(neighbor));
                             if(finalState(neighbor))
                             {
@@ -101,9 +104,21 @@ class Graph
                             {
                                 q.push(game.getH());
                             }
+                            
                         }
                     }
                 }
+            }
+        }
+
+        void printPath()
+        {
+            vector<ll> p=path[game.getH()];
+            vector<int> s;
+            while(p[0]!=-1)
+            {
+                p=path[p];
+                
             }
         }
     };
@@ -114,5 +129,7 @@ int main()
     g.game.showCube();
     g.bfs();
     g.game.showCube();
+    g.printPath();
+    
     return 0;    
 }
