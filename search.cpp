@@ -76,14 +76,9 @@ class Graph
             if(h[1]==(pow(game.faces,game.length*game.length))-1/(game.faces-1)){
                 return true;
             }
-        }
+        }       
 
-        int Manhattan()
-        {
-
-        }        
-
-        ll heuPhase1(vector<ll> v)
+        ll heuPhase1(Cube v)
         {
             return 0;
         }
@@ -110,10 +105,10 @@ class Graph
                     {
                         for(int k=0;k<3;k++)
                         {
-                            /*if((i<3 && k==1) || (i==3 && k==0))
+                            if((i<3 && k==1) || (i==3 && k==0))
                             {
                                 continue;
-                            }*/
+                            }
                             neighbor=aux;
                             switch(i)
                             {   
