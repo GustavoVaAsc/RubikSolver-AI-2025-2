@@ -501,7 +501,7 @@ class Graph
 
 
 
-int main()
+Graph solve()
 {
     Graph g;
     g.game.showCube();
@@ -516,7 +516,7 @@ int main()
     if (g.finalState(g.game)) {
         cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
         cout<<cpu_time_used<<endl;
-        return 0;
+        return g;
     }
     
     // Solve Phase 2 (Middle Layer)
@@ -527,7 +527,7 @@ int main()
     if (g.finalState(g.game)) {
         cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
         cout<<cpu_time_used<<endl;
-        return 0;
+        return g;
     }
     
     // Solve Phase 3 (Last Layer)
@@ -538,6 +538,6 @@ int main()
     g.game.showCube();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     cout<<cpu_time_used<<endl;
-    return 0;    
+    return g;    
 }
 

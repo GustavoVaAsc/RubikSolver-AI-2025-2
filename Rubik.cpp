@@ -7,7 +7,11 @@
 
 const int CUBE_SIZE = 3;
 
+Graph rubiksCube;
 
+double solveTime = 0;
+bool showTime = false;
+TTF_Font* font = nullptr;
 
 // Colors for the cube
 SDL_Color green = {0, 255, 0, 255};     // Green - 0
@@ -86,7 +90,18 @@ int getColorIndex(SDL_Color color) {
     return -1;
 }
 
-// Add before main()
+void renderText(SDL_Renderer* renderer, TTF_Font* font, int x, int y, const std::string& text) {
+    SDL_Color textColor = {255, 255, 255, 255}; // White text
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    
+    SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
+    
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
 void updateUICube(Cube& cube, 
     SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE],
     SDL_Color backFace[CUBE_SIZE][CUBE_SIZE],
@@ -117,6 +132,20 @@ void updateUICube(Cube& cube,
 }
 
 int main() {
+
+    if (TTF_Init() == -1) {
+        std::cerr << "Error initializing SDL_ttf: " << TTF_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+    
+    font = TTF_OpenFont("arial.ttf", 24); // Provide a valid font path
+    if (!font) {
+        std::cerr << "Error loading font: " << TTF_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
         return 1;
@@ -258,7 +287,7 @@ int main() {
                 // Inside SDL_MOUSEBUTTONDOWN event handler:
                 if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
                     // Initialize and randomize cube
-                    Graph rubiksCube = Graph();
+                    rubiksCube = Graph();
                     rubiksCube.game.reset();
                     rubiksCube.randomize();
                     
@@ -277,7 +306,12 @@ int main() {
                     }
                 }
                 else if(isButtonHovered(buttonXSolve, buttonYSolve, buttonSizeSolve, mouseX, mouseY)){
-                    // ACA VA CUANDO SE APRIETA EL BOTON DE RESOLVER
+                    clock_t start, end;
+                    start = clock();
+                    
+                    rubiksCube = solve();
+                    solveTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+                    updateUICube(rubiksCube.game, frontFace, backFace, leftFace, rightFace, topFace, bottomFace);
                 }
             }
         }
@@ -315,6 +349,10 @@ int main() {
             SDL_RenderCopy(renderer, buttonTextureSolve, NULL, &buttonRectSolve);
         }
 
+        if (showTime) {
+            std::string timeText = "Solve time: " + std::to_string(solveTime).substr(0, 4) + "s";
+            renderText(renderer, font, 10, 10, timeText);
+        }
         SDL_RenderPresent(renderer);
 
     }
@@ -322,6 +360,9 @@ int main() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    TTF_CloseFont(font);
+    TTF_Quit();
 
     return 0;
 }

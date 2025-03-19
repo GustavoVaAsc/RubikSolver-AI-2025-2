@@ -41,6 +41,77 @@ class Cube
             faceNames={'N','B','R','A','G','Y'};
             reset();
         }
+
+        void horizontal(bool right, int fila) {
+            // Add center protection
+            if (fila == 1) {  // Middle layer
+                // Only swap edge pieces, keep centers fixed
+                for(int i = 0; i < length; i++) {
+                    if (i == 1) continue; // Skip center column
+                    Cell aux;
+                    if(right)
+                    {
+                        for(int i=0;i<length;i++)
+                        {
+                            aux=cube[faces-3][fila][i];
+                            for(int j=faces-3;j>0;j--)
+                            {
+                                cube[j][fila][i]=cube[j-1][fila][i];
+                            }
+                            cube[0][fila][i]=aux;
+                        }
+                    }
+                    else
+                    {
+                        for(int i=0;i<length;i++)
+                        {
+                            aux=cube[0][fila][i];
+                            for(int j=0;j<faces-3;j++)
+                            {
+                                cube[j][fila][i]=cube[j+1][fila][i];
+                            }
+                            cube[faces-3][fila][i]=aux;
+                        }
+                    }
+                    if(fila==0)
+                        rotateFace(4,right);
+                    if(fila==length-1)
+                        rotateFace(5,right);
+                }
+            } else {
+                // Original horizontal move logic
+                Cell aux;
+                if(right)
+                {
+                    for(int i=0;i<length;i++)
+                    {
+                        aux=cube[faces-3][fila][i];
+                        for(int j=faces-3;j>0;j--)
+                        {
+                            cube[j][fila][i]=cube[j-1][fila][i];
+                        }
+                        cube[0][fila][i]=aux;
+                    }
+                }
+                else
+                {
+                    for(int i=0;i<length;i++)
+                    {
+                        aux=cube[0][fila][i];
+                        for(int j=0;j<faces-3;j++)
+                        {
+                            cube[j][fila][i]=cube[j+1][fila][i];
+                        }
+                        cube[faces-3][fila][i]=aux;
+                    }
+                }
+                if(fila==0)
+                    rotateFace(4,right);
+                if(fila==length-1)
+                    rotateFace(5,right);
+            }
+        }
+        /*
         void horizontal(bool right,int fila)
         {
             Cell aux;
@@ -73,7 +144,7 @@ class Cube
             if(fila==length-1)
                 rotateFace(5,right);
         }
-        
+        */
         void vertical(bool up,int columna)
         {
             Cell aux;
@@ -107,7 +178,7 @@ class Cube
                 rotateFace(2,up);
             }
         }
-
+        
         void rotar(bool right,int depth)
         {
             Cell aux;
@@ -168,6 +239,44 @@ class Cube
             }
             showFace(5,"\t ");
         }
+
+        void rotateFace(int face, bool right) {
+            Cell aux;
+            pair<int,int> cor,pastCor;
+            // Add center protection for 3x3 cubes
+            if (length == 3) {
+                // Preserve center color
+                Cell center = cube[face][1][1];
+                // Perform rotation
+                for(int i = 0; i < (length+1)/2; i++) {
+                    aux=cube[face][0][i];
+                    cor.X=0; cor.Y=i;
+                    for(int j=0;j<sides-1;j++)
+                    {
+                        pastCor=getCoord(!right,cor);
+                        cube[face][cor.X][cor.Y]=cube[face][pastCor.X][pastCor.Y];
+                        cor=pastCor;
+                    }
+                    cube[face][cor.X][cor.Y]=aux;
+                }
+                // Restore center position
+                cube[face][1][1] = center;
+            } else {
+                // Original rotation logic
+                for(int i = 0; i < (length+1)/2; i++) {
+                    aux=cube[face][0][i];
+                    cor.X=0; cor.Y=i;
+                    for(int j=0;j<sides-1;j++)
+                    {
+                        pastCor=getCoord(!right,cor);
+                        cube[face][cor.X][cor.Y]=cube[face][pastCor.X][pastCor.Y];
+                        cor=pastCor;
+                    }
+                    cube[face][cor.X][cor.Y]=aux;
+                }
+            }
+        }
+         /**
         void rotateFace(int face,bool right)
         {
             Cell aux;
@@ -185,6 +294,7 @@ class Cube
                 cube[face][cor.X][cor.Y]=aux;
             }
         }
+            */
         void showFace(int id,string stline) 
         {
             for(int i=0;i<length;i++)
@@ -197,6 +307,77 @@ class Cube
                 cout<<endl;
             }
         }
+        
+
+        pair<int,int> getCoord(bool right, pair<int,int> actualcoord) {
+            pair<int,int> newCord;
+            
+            // Handle center cell (1,1) for 3x3 cube
+            if (length == 3 && actualcoord.X == 1 && actualcoord.Y == 1) {
+                return actualcoord; // Center never moves
+            }
+    
+            if(actualcoord.X==0)
+            {
+                
+                if(right)
+                {
+                    newCord.X=actualcoord.Y;
+                    newCord.Y=length-1;
+                    return newCord;
+                }
+                else{
+                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=0;
+                    return newCord;
+                }
+            }
+            if(actualcoord.Y==0)
+            {
+                if(right)
+                {
+                    newCord.X=0;
+                    newCord.Y=actualcoord.X;
+                    return newCord;
+                }
+                else{
+                    newCord.X=length-1;
+                    newCord.Y=actualcoord.X;
+                    return newCord;
+                }
+            }
+            if(actualcoord.X==length-1)
+            {
+                if(right)
+                {
+                    newCord.Y=0;
+                    newCord.X=actualcoord.Y;
+                    return newCord;
+                }
+                else
+                {
+                    newCord.X=length-1-actualcoord.Y;
+                    newCord.Y=length-1;
+                    return newCord;
+                }
+            }
+            if(actualcoord.Y==length-1)
+            {
+                if(right)
+                {
+                    newCord.X=length-1;
+                    newCord.Y=length-1-actualcoord.X;
+                    return newCord;
+                }
+                else{
+                    newCord.X=0;
+                    newCord.Y=actualcoord.X;
+                    return newCord;
+                }
+            }
+            return newCord;
+        }
+        /*
         pair<int,int> getCoord(bool right,pair<int,int> actualcoord)
         {
             pair<int,int> newCord;
@@ -261,6 +442,7 @@ class Cube
             return newCord;
             
         }
+        */
         vector<ll> getH() const
         {
             vector<ll> h(faces);
