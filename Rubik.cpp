@@ -3,9 +3,15 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
+<<<<<<< HEAD
 #include <string> 
+=======
+#include "search.cpp"
+>>>>>>> 080c74991cdcd74c6b5e88c2cdec06a3cc230a42
 
 const int CUBE_SIZE = 3;
+
+
 
 // Colors for the cube
 SDL_Color green = {0, 255, 0, 255};     // Green - 0
@@ -14,6 +20,15 @@ SDL_Color blue = {0, 0, 255, 255};      // Blue - 2
 SDL_Color yellow = {255, 255, 0, 255};  // Yellow - 3
 SDL_Color orange = {255, 165, 0, 255};  // Orange - 4
 SDL_Color red = {255, 0, 0, 255};       // Red - 5
+
+SDL_Color colorMap[6] = {
+    green,   // 0: green
+    white,   // 1: white
+    blue,    // 2: blue
+    yellow,  // 3: yellow 
+    orange,  // 4: orange
+    red      // 5: red
+};
 
 // Matrix for transform color to number
 SDL_Color cube[6][CUBE_SIZE][CUBE_SIZE];
@@ -73,6 +88,36 @@ int getColorIndex(SDL_Color color) {
         return 5;
     }
     return -1;
+}
+
+// Add before main()
+void updateUICube(Cube& cube, 
+    SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE],
+    SDL_Color backFace[CUBE_SIZE][CUBE_SIZE],
+    SDL_Color leftFace[CUBE_SIZE][CUBE_SIZE],
+    SDL_Color rightFace[CUBE_SIZE][CUBE_SIZE],
+    SDL_Color topFace[CUBE_SIZE][CUBE_SIZE],
+    SDL_Color bottomFace[CUBE_SIZE][CUBE_SIZE]) {
+    // Map solver cube faces to UI components
+    const int faceMap[6] = {0, 4, 2, 5, 1, 3}; // Adjust based on your cube's face orientation
+
+    for(int face = 0; face < 6; face++) {
+        for(int row = 0; row < CUBE_SIZE; row++) {
+            for(int col = 0; col < CUBE_SIZE; col++) {
+                int colorIdx = cube.cube[face][row][col].color;
+                SDL_Color color = colorMap[colorIdx];
+            
+                switch(faceMap[face]) {
+                    case 0: frontFace[row][col] = color; break;
+                    case 1: backFace[row][col] = color; break;
+                    case 2: leftFace[row][col] = color; break;
+                    case 3: rightFace[row][col] = color; break;
+                    case 4: topFace[row][col] = color; break;
+                    case 5: bottomFace[row][col] = color; break;
+                }
+            }
+        }
+    }
 }
 
 int main() {
@@ -163,7 +208,9 @@ int main() {
     int buttonSize = 150;
     int buttonX = (900 - buttonSize) / 2; // Center horizontally
     int buttonY = 500; // Place the button at the bottom
-
+    // Inside main(), before the main loop:
+    Cube initialCube;
+    updateUICube(initialCube, frontFace, backFace, leftFace, rightFace, topFace, bottomFace);
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -174,8 +221,9 @@ int main() {
                 int mouseX = event.button.x;
                 int mouseY = event.button.y;
 
-                // If the mouse clicks on the button, perform some action here
+                // Inside SDL_MOUSEBUTTONDOWN event handler:
                 if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
+<<<<<<< HEAD
 
                     for (int i = 0; i < CUBE_SIZE; i++) {
                         for (int j = 0; j < CUBE_SIZE; j++) {
@@ -327,7 +375,24 @@ int main() {
                                 // Change the color to the next one in the cycle
                                 colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
                                 bottomFace[row][col] = colorCycle[colorIndex[row][col]];
+=======
+                    // Initialize and randomize cube
+                    Graph rubiksCube = Graph();
+                    rubiksCube.game.reset();
+                    rubiksCube.randomize();
+                    
+                    // Update UI with new cube state
+                    updateUICube(rubiksCube.game, frontFace, backFace, leftFace, rightFace, topFace, bottomFace);
+                    
+                    // Print numerical representation (optional)
+                    for(int f = 0; f < 6; f++) {
+                        std::cout << "Face " << f << ":\n";
+                        for(int r = 0; r < CUBE_SIZE; r++) {
+                            for(int c = 0; c < CUBE_SIZE; c++) {
+                                std::cout << rubiksCube.game.cube[f][r][c].color << " ";
+>>>>>>> 080c74991cdcd74c6b5e88c2cdec06a3cc230a42
                             }
+                            std::cout << "\n";
                         }
                     }
                 }
