@@ -136,7 +136,7 @@ int main() {
 
     // Initialize the colors for the cube
     SDL_Color leftFace[CUBE_SIZE][CUBE_SIZE] = { {green, green, green}, {green, green, green}, {green, green, green} };  // Green - 0
-    SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE] = { {white, white, white}, {white, white, white}, {white, white, white} };  // White- 1
+    SDL_Color frontFace[CUBE_SIZE][CUBE_SIZE] = { {white, white, white}, {white, white, white}, {white, white, white} };  // White - 1
     SDL_Color rightFace[CUBE_SIZE][CUBE_SIZE] = { {blue, blue, blue}, {blue, blue, blue}, {blue, blue, blue} };  // Blue - 2
     SDL_Color backFace[CUBE_SIZE][CUBE_SIZE] = { {yellow, yellow, yellow}, {yellow, yellow, yellow}, {yellow, yellow, yellow} };  // Yellow - 3
     SDL_Color topFace[CUBE_SIZE][CUBE_SIZE] = { {orange, orange, orange}, {orange, orange, orange}, {orange, orange, orange} };  // Orange - 4
@@ -184,6 +184,7 @@ int main() {
                         }
                     }
 
+                    // Fill the cube_number matrix 
                     for (int i = 0; i < 6; i++) {
                         for (int row = 0; row < CUBE_SIZE; row++) {
                             for (int col = 0; col < CUBE_SIZE; col++) {
@@ -194,6 +195,51 @@ int main() {
                             std::cout << std::endl;
                         }
                         std::cout << std::endl;
+                    }
+
+                    // LA MATRIZ QUE TIENE EL CUBO CONVERTIDO EN NUMEROS ES cube_number[][][] (arriba)
+                    // AQUI DEBE EMPEZAR A ARMAR EL CUBO
+
+                    // White
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            frontFace[row][col] = white;
+                        }
+                    }
+
+                    // Yellow
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            backFace[row][col] = yellow;
+                        }
+                    }
+
+                    // Green
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            leftFace[row][col] = green;
+                        }
+                    }
+
+                    // Blue
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            rightFace[row][col] = blue;
+                        }
+                    }
+
+                    // Orange
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            topFace[row][col] = orange;
+                        }
+                    }
+
+                    // Red
+                    for (int row = 0; row < CUBE_SIZE; ++row) {
+                        for (int col = 0; col < CUBE_SIZE; ++col) {
+                            bottomFace[row][col] = red;
+                        }
                     }
                 }
 
