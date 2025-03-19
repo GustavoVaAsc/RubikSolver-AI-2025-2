@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
+#include <string> 
 
 const int CUBE_SIZE = 3;
 
@@ -80,6 +81,7 @@ int main() {
         return 1;
     }
 
+
     SDL_Window* window = SDL_CreateWindow("Rubik Cube by ChatGPI",
                                            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                            900, 700, SDL_WINDOW_SHOWN);
@@ -88,6 +90,8 @@ int main() {
         SDL_Quit();
         return 1;
     }
+
+    
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
@@ -241,6 +245,7 @@ int main() {
                             bottomFace[row][col] = red;
                         }
                     }
+
                 }
 
                 // Check each square on the front face (White)
@@ -357,7 +362,6 @@ int main() {
 
         SDL_RenderPresent(renderer);
 
-        SDL_RenderPresent(renderer);
     }
 
     SDL_DestroyRenderer(renderer);
