@@ -500,7 +500,7 @@ class Graph
     };
 
 
-/*
+
 int main()
 {
     Graph g;
@@ -541,4 +541,3 @@ int main()
     return 0;    
 }
 
-*/

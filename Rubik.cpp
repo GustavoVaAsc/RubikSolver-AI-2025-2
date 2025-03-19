@@ -276,6 +276,9 @@ int main() {
                         }
                     }
                 }
+                else if(isButtonHovered(buttonXSolve, buttonYSolve, buttonSizeSolve, mouseX, mouseY)){
+                    // ACA VA CUANDO SE APRIETA EL BOTON DE RESOLVER
+                }
             }
         }
 
