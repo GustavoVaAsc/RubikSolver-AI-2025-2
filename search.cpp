@@ -12,26 +12,66 @@
 #define all(v) v.begin(),v.end()
 #define X first 
 #define Y second
+
+class CubeItem
+{
+    public:
+        vector<vector<int>> v;
+        int faces=0;
+        CubeItem(){}
+        CubeItem(vector<vector<int>> v,int faces)
+        {
+            this->faces=faces;
+            this->v=v;
+        }
+        int getH(Cube a)
+        {
+            int sum=0,base=1;
+            for(int i=0;i<v.size();i++)
+            {
+                sum+=(a.cube[v[i][0]][v[i][1]][v[i][2]].color)*base;
+                base*=faces;
+            }
+            return sum;
+        }
+        
+};
+
 class Graph
 {
     public:
         priority_queue<pair<ll,Cube>> q;
         Cube game;
         map<Cube,Cube> path;
-        set<Cube> visited;      
+        set<Cube> visited; 
+        map<vector<ll>,ll> visitedC;     
         map<Cube,vector<int>> mov;
         map<Cube,ll> dist;
-        Cube f,s;
+        vector<CubeItem> corners;
+        vector<CubeItem> edges;
+        
+        int num_corners;
+        int num_edges;
         Graph()
         {
+            num_corners=8;
             game.reset();
+            corners=vector<CubeItem> (num_corners);
+            corners[0]=CubeItem({{0,0,2},{4,2,0},{1,0,0}},game.faces);
+            corners[1]=CubeItem({{1,0,2},{4,2,2},{2,0,0}},game.faces);
+            corners[2]=CubeItem({{0,2,2},{1,2,0},{5,0,0}},game.faces);
+            corners[3]=CubeItem({{1,2,2},{2,2,0},{5,0,2}},game.faces);
+            corners[4]=CubeItem({{0,0,0},{4,0,0},{3,0,2}},game.faces);
+            corners[5]=CubeItem({{4,0,2},{2,0,2},{3,0,0}},game.faces);
+            corners[6]=CubeItem({{5,2,2},{2,2,2},{3,2,0}},game.faces);
+            corners[7]=CubeItem({{5,2,0},{3,2,2},{0,2,0}},game.faces);
             randomize();
         }
         void randomize()
         {
             srand(time(NULL));
             int possibleMovs;
-            int t=rand()%5,opt;
+            int t=rand()%8,opt;
             bool flag;
             int fila,columna,depth;
             while(t--)
@@ -59,82 +99,53 @@ class Graph
                 }
             }
         }
-        bool finalState(vector<ll> h)
+        
+        vector<ll> getCorners(Cube a)
         {
-            for(int i=0;i<game.faces;i++)
+            int div=2;
+            vector<ll> h(div);
+            int i;
+            for(int j=0;j<div;j++)
             {
-                if(h[i]!=i*((pow(game.faces,game.length*game.length))-1)/(game.faces-1))
+                ll base=1;
+                for(i=j*num_corners/div;i<(j+1)*num_corners/div;i++)
                 {
-                    return false;
+                    h[j]+=corners[i].getH(a)*base;
+                    base*=pow(game.faces,3);
                 }
             }
-            return true;
+            return h;
         }
         
-        bool finalPhase1(vector<ll> h)
+        void printCor(Cube a)
         {
-            if(h[0]==0){
-                return true;
+            for(auto c:getCorners(a))
+            {
+                cout<<c<<" ";
             }
-            return false;
-        }       
-
-
-        ll heuPhase1(Cube c)
-        {
-            ll misplaced = 0;
-            ll manhattanDist = 0;
-
-            for(int i=0; i<c.faces; i++){
-                for(int j=0; j<c.length; j++) {
-                    for(int k=0; k<c.length; k++){
-                        int color = c.cube[i][j][k].color;
-
-                
-                        int targetX = color / c.length;
-                        int targetY = color % c.length;
-                        
-                        int dist = abs(targetX - j) + abs(targetY - k);
-                        manhattanDist += dist;
-
-                        if(c.cube[i][j][k].color != color){
-                            misplaced++;
-                        }
-                    }
-                }
-            }
-
-            return -(manhattanDist + misplaced);
         }
 
-
-        void Astar()
+        void  bfsCor()
         {
-            Cube aux=game;
-            s=aux;
-            q.push({0,aux});
-            visited.insert(aux);
-            if(finalPhase1(aux.getH()))
+            queue<Cube> p;
+            game.reset();
+            Cube s=game,aux,neighbor;
+            p.push(s);
+            //s.showCube();
+            visitedC[getCorners(s)]=0;
+            printCor(s);
+            cout<<0<<endl;
+            while(!p.empty())
             {
-                f=aux;
-                return;
-            }
-            Cube neighbor;
-            while(!q.empty())
-            {
-                aux=q.top().Y;
-                aux.showCube();
-                q.pop();
+                aux=p.front();
+                p.pop();
                 for(int i=1;i<=3;i++)
                 {
                     for(int j=0;j<2;j++)
                     {
                         for(int k=0;k<3;k++)
                         {
-                            /*if((i<3 && k==1) || (i==3 && k==0))
-                            {
-                                continue;
-                            }*/
+                            if(k==1) continue;
                             neighbor=aux;
                             switch(i)
                             {   
@@ -149,19 +160,77 @@ class Graph
                                     break;
                             }
                             Cube c=neighbor;
+                            if(visitedC.find(getCorners(neighbor))==visitedC.end())
+                            {
+                                int x=0;
+                                x=visitedC[getCorners(aux)]+1;
+                                visitedC[getCorners(neighbor)]=x;
+                                printCor(neighbor);
+                                cout<<x<<endl;
+                                p.push(neighbor);
+                            }
                             
+                            
+                        }
+                    }
+                }
+            }
+        }
+
+        void Astar(Cube s,Cube f,int lookPattern)
+        {
+            q.push({0,s});
+            visited.insert(s);
+            if(f==s)
+            {
+                return;
+            }
+            Cube neighbor,aux;
+            int d=0;
+            while(!q.empty())
+            {
+                aux=q.top().Y;
+                d++;
+                q.pop();
+                for(int i=1;i<=3;i++)
+                {
+                    for(int j=0;j<2;j++)
+                    {
+                        for(int k=0;k<3;k++)
+                        {
+                            if(k==1) continue;
+                            neighbor=aux;
+                            switch(i)
+                            {   
+                                case 1:
+                                    neighbor.horizontal(j,k);
+                                    break;
+                                case 2:
+                                    neighbor.vertical(j,k);
+                                    break;
+                                case 3:
+                                    neighbor.rotar(j,k);
+                                    break;
+                            }
+                            Cube c=neighbor;
                             if(visited.find(neighbor)==visited.end())
                             {
+                                if(lookPattern==1)
+                                {
+                                    for(ll c:getCorners(neighbor))
+                                    {
+                                        cout<<c<<" ";
+                                    }
+                                    cout<<d<<endl;;
+                                }
                                 path[neighbor]=aux;
                                 mov[aux]={i,j,k};
                                 visited.insert(neighbor);
-                                if(finalPhase1(neighbor.getH()))
+                                if(neighbor==f)
                                 {
-                                    f=neighbor;
                                     return;
                                 }
                                 q.push({0,neighbor});
-                                cout<<heuPhase1(neighbor)<<" ";
                             }
                             
                         }
@@ -171,7 +240,7 @@ class Graph
         }
 
 
-        void printPath()
+        void printPath(Cube f,Cube s)
         {
             stack<vector<int>> pile;
             while(f!=s)
@@ -195,15 +264,37 @@ class Graph
 int main()
 {
     Graph g;
-    g.game.showCube();
+    int lookP=1;
+    if(lookP==0)
+        g.game.showCube();
     clock_t start, end;
     double cpu_time_used;
     start=clock();
-    g.Astar();
+    Cube f,s;
+    switch(lookP)
+    {
+        case 0:
+            g.randomize();
+            s=g.game;
+            g.game.reset();
+            f=g.game;
+            break;
+        case 1:
+            g.randomize();
+            f=g.game;
+            g.game.reset();
+            s=g.game;
+            break;
+    }
+    g.bfsCor();
+    //g.Astar(f,s,1);
     end=clock();
-    g.game.showCube();
-    g.printPath();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    cout<<cpu_time_used<<endl;
+    if(lookP==0)
+    {
+        g.game.showCube();
+        g.printPath(f,s);
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        cout<<cpu_time_used<<endl;
+    }
     return 0;    
 }
