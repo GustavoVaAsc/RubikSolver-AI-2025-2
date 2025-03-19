@@ -3,11 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
-<<<<<<< HEAD
-#include <string> 
-=======
 #include "search.cpp"
->>>>>>> 080c74991cdcd74c6b5e88c2cdec06a3cc230a42
 
 const int CUBE_SIZE = 3;
 
@@ -154,9 +150,23 @@ int main() {
         return 1;
     }
 
-    SDL_Surface* buttonHoverSurface = IMG_Load("RubikSolveButton.jpg");
+    SDL_Surface* buttonHoverSurface = IMG_Load("RandomFace.jpg");
     if (buttonHoverSurface == nullptr) {
         std::cerr << "Error loading hover button image: " << IMG_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Surface* buttonSurfaceSolve = IMG_Load("RubikSolveButton.jpg");
+    if (buttonSurface == nullptr) {
+        std::cerr << "Error loading button image: " << IMG_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Surface* buttonHoverSolve = IMG_Load("SolveFace.jpg");
+    if (buttonSurface == nullptr) {
+        std::cerr << "Error loading button image: " << IMG_GetError() << std::endl;
         SDL_Quit();
         return 1;
     }
@@ -179,9 +189,28 @@ int main() {
         return 1;
     }
 
+    SDL_Texture* buttonTextureSolve = SDL_CreateTextureFromSurface(renderer, buttonSurfaceSolve);
+    if (buttonTexture == nullptr) {
+        std::cerr << "Error creating texture for button: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(buttonSurfaceSolve);
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Texture* buttonHoverTextureSolve = SDL_CreateTextureFromSurface(renderer, buttonHoverSolve);
+    if (buttonHoverTexture == nullptr) {
+        std::cerr << "Error creating hover texture for button: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(buttonSurfaceSolve);
+        SDL_FreeSurface(buttonHoverSolve);
+        SDL_Quit();
+        return 1;
+    }
+
     // Free surfaces after creating textures
     SDL_FreeSurface(buttonSurface);
     SDL_FreeSurface(buttonHoverSurface);
+    SDL_FreeSurface(buttonSurfaceSolve);
+    SDL_FreeSurface(buttonHoverSolve);
 
     // Initialize the colors for the cube
     SDL_Color leftFace[CUBE_SIZE][CUBE_SIZE] = { {green, green, green}, {green, green, green}, {green, green, green} };  // Green - 0
@@ -206,8 +235,13 @@ int main() {
     int startY = (700 / 2) - (squareSize * 4);
 
     int buttonSize = 150;
-    int buttonX = (900 - buttonSize) / 2; // Center horizontally
+    int buttonX = (1050 - buttonSize) / 2; // Center horizontally
     int buttonY = 500; // Place the button at the bottom
+
+    int buttonSizeSolve = 150;
+    int buttonXSolve = (700 - buttonSize) / 2;
+    int buttonYSolve = 500;
+
     // Inside main(), before the main loop:
     Cube initialCube;
     updateUICube(initialCube, frontFace, backFace, leftFace, rightFace, topFace, bottomFace);
@@ -223,159 +257,6 @@ int main() {
 
                 // Inside SDL_MOUSEBUTTONDOWN event handler:
                 if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
-<<<<<<< HEAD
-
-                    for (int i = 0; i < CUBE_SIZE; i++) {
-                        for (int j = 0; j < CUBE_SIZE; j++) {
-                            cube[0][i][j] = leftFace[i][j];
-                            cube[1][i][j] = frontFace[i][j];
-                            cube[2][i][j] = rightFace[i][j];
-                            cube[3][i][j] = backFace[i][j];
-                            cube[4][i][j] = topFace[i][j];
-                            cube[5][i][j] = bottomFace[i][j];
-                        }
-                    }
-
-                    // Fill the cube_number matrix 
-                    for (int i = 0; i < 6; i++) {
-                        for (int row = 0; row < CUBE_SIZE; row++) {
-                            for (int col = 0; col < CUBE_SIZE; col++) {
-                                int colorIndex = getColorIndex(cube[i][row][col]);
-                                cube_number[i][row][col] = colorIndex;
-                                std::cout << cube_number[i][row][col] << " ";
-                            }
-                            std::cout << std::endl;
-                        }
-                        std::cout << std::endl;
-                    }
-
-                    // LA MATRIZ QUE TIENE EL CUBO CONVERTIDO EN NUMEROS ES cube_number[][][] (arriba)
-                    // AQUI DEBE EMPEZAR A ARMAR EL CUBO
-
-                    // White
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            frontFace[row][col] = white;
-                        }
-                    }
-
-                    // Yellow
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            backFace[row][col] = yellow;
-                        }
-                    }
-
-                    // Green
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            leftFace[row][col] = green;
-                        }
-                    }
-
-                    // Blue
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            rightFace[row][col] = blue;
-                        }
-                    }
-
-                    // Orange
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            topFace[row][col] = orange;
-                        }
-                    }
-
-                    // Red
-                    for (int row = 0; row < CUBE_SIZE; ++row) {
-                        for (int col = 0; col < CUBE_SIZE; ++col) {
-                            bottomFace[row][col] = red;
-                        }
-                    }
-
-                }
-
-                // Check each square on the front face (White)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                frontFace[row][col] = colorCycle[colorIndex[row][col]];
-                            }
-                        }
-                    }
-                }
-
-                // Check each square on the back face (Yellow)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX + 300 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                backFace[row][col] = colorCycle[colorIndex[row][col]];
-                            }
-                        }
-                    }
-                }
-
-                // Check each square on the left face (Green)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX - 150 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                leftFace[row][col] = colorCycle[colorIndex[row][col]];
-                            }
-                        }
-                    }
-                }
-
-                // Check each square on the right face (Blue)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX + 150 + col * squareSize, startY + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                rightFace[row][col] = colorCycle[colorIndex[row][col]];
-                            }
-                        }
-                    }
-                }
-
-                // Check each square on the top face (Orange)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX + col * squareSize, startY - 150 + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                topFace[row][col] = colorCycle[colorIndex[row][col]];
-                            }
-                        }
-                    }
-                }
-
-                // Check each square on the bottom face (Red)
-                for (int row = 0; row < CUBE_SIZE; ++row) {
-                    for (int col = 0; col < CUBE_SIZE; ++col) {
-                        if (isInside(startX + col * squareSize, startY + 150 + row * squareSize, mouseX, mouseY, squareSize)) {
-                            // Center never changes
-                            if (row != 1 || col != 1) {
-                                // Change the color to the next one in the cycle
-                                colorIndex[row][col] = (colorIndex[row][col] + 1) % colorCycle.size();
-                                bottomFace[row][col] = colorCycle[colorIndex[row][col]];
-=======
                     // Initialize and randomize cube
                     Graph rubiksCube = Graph();
                     rubiksCube.game.reset();
@@ -390,7 +271,6 @@ int main() {
                         for(int r = 0; r < CUBE_SIZE; r++) {
                             for(int c = 0; c < CUBE_SIZE; c++) {
                                 std::cout << rubiksCube.game.cube[f][r][c].color << " ";
->>>>>>> 080c74991cdcd74c6b5e88c2cdec06a3cc230a42
                             }
                             std::cout << "\n";
                         }
@@ -417,12 +297,19 @@ int main() {
 
         // Define the rectangle for the button
         SDL_Rect buttonRect = {buttonX, buttonY, buttonSize, buttonSize};
+        SDL_Rect buttonRectSolve = {buttonXSolve, buttonYSolve, buttonSizeSolve, buttonSizeSolve};
 
         // Draw the button
         if (isButtonHovered(buttonX, buttonY, buttonSize, mouseX, mouseY)) {
             SDL_RenderCopy(renderer, buttonHoverTexture, NULL, &buttonRect);
         } else {
             SDL_RenderCopy(renderer, buttonTexture, NULL, &buttonRect);
+        }
+
+        if (isButtonHovered(buttonXSolve, buttonYSolve, buttonSizeSolve, mouseX, mouseY)) {
+            SDL_RenderCopy(renderer, buttonHoverTextureSolve, NULL, &buttonRectSolve);
+        } else {
+            SDL_RenderCopy(renderer, buttonTextureSolve, NULL, &buttonRectSolve);
         }
 
         SDL_RenderPresent(renderer);
